@@ -1,0 +1,65 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+@using Birdsong.Models
+@using Birdsong.Services
+@inject JsonFileProductService ProductService
+
+<div class="card-columns">
+    @foreach (var bird in ProductService.GetBirds())
+    {
+        <div class="card">
+            <div class="card-img" style="background-image: url('@bird.Image');">
+            </div>
+            <div class="card-body">
+                <h4 class="card-title">@bird.Name</h4>
+                <h5 class="card-subtitle">@bird.Species</h5>
+            </div>
+            <div class="card-footer">
+                <small class="text-muted">
+                    <button @onclick="(e => SelectProduct(bird.Id ))"
+                        data-bs-toggle="modal" data-bs-target="#productModal" class="btn btn-primary">
+                        More Info
+                    </button>
+                </small>
+            </div>
+        </div>
+    }
+</div>
+
+
+<div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="productTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        @if (selectedBird != null)
+        {
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="productTitle">@selectedBird.Name - @selectedBird.Species</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card">
+                        <div class="card-img" style="background-image: url('@selectedBird.Image');">
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">@selectedBird.Description</p>
+                            <audio controls="controls" src="@selectedBird.Audio"></audio>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+@code {
+    Bird selectedBird;
+    int selectedBirdId;
+
+    void SelectProduct(int birdId)
+    {
+        selectedBirdId = birdId;
+        selectedBird = ProductService.GetBirds().First(x => x.Id == birdId);
+    }
+}
